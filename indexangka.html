@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Modern</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #ff6b6b;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --success: #4caf50;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .calculator-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+        }
+
+        .calculator-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .calculator-header p {
+            opacity: 0.9;
+        }
+
+        .calculator-body {
+            padding: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.3);
+        }
+
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 480px) {
+            .operations {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .operation-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .operation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .operation-btn.tambah {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+        }
+
+        .operation-btn.kurang {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .operation-btn.kali {
+            background: linear-gradient(135deg, #4a6bff, #6c8aff);
+            color: white;
+        }
+
+        .operation-btn.bagi {
+            background: linear-gradient(135deg, #ffa726, #ffb74d);
+            color: white;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-container {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .result-operation {
+            color: #666;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .history {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .history-operation {
+            font-weight: 600;
+        }
+
+        .history-result {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1><i class="fas fa-calculator"></i> Kalkulator Modern</h1>
+            <p>Kalkulator sederhana dengan antarmuka yang elegan</p>
+        </div>
+
+        <div class="calculator-body">
+            <div class="input-group">
+                <label for="angka1">Angka Pertama:</label>
+                <input type="number" id="angka1" placeholder="Masukkan angka pertama" step="any">
+            </div>
+
+            <div class="input-group">
+                <label for="angka2">Angka Kedua:</label>
+                <input type="number" id="angka2" placeholder="Masukkan angka kedua" step="any">
+            </div>
+
+            <div class="operations">
+                <button class="operation-btn tambah" data-operation="tambah">
+                    <i class="fas fa-plus"></i> Tambah
+                </button>
+                <button class="operation-btn kurang" data-operation="kurang">
+                    <i class="fas fa-minus"></i> Kurang
+                </button>
+                <button class="operation-btn kali" data-operation="kali">
+                    <i class="fas fa-times"></i> Kali
+                </button>
+                <button class="operation-btn bagi" data-operation="bagi">
+                    <i class="fas fa-divide"></i> Bagi
+                </button>
+            </div>
+
+            <button class="calculate-btn" id="hitung">
+                <i class="fas fa-calculator"></i> Hitung Sekarang
+            </button>
+
+            <div class="result-container" id="resultContainer">
+                <div class="result-title">Hasil Perhitungan:</div>
+                <div class="result-value" id="resultValue">0</div>
+                <div class="result-operation" id="resultOperation"></div>
+            </div>
+
+            <div class="history">
+                <div class="history-title">
+                    <i class="fas fa-history"></i> Riwayat Perhitungan
+                </div>
+                <ul class="history-list" id="historyList">
+                    <!-- Riwayat akan ditambahkan di sini -->
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Dibuat dengan <i class="fas fa-heart" style="color: #ff6b6b;"></i> menggunakan HTML, CSS, dan JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        // Fungsi kalkulator
+        function tambah(a, b) {
+            return a + b;
+        }
+
+        function kurang(a, b) {
+            return a - b;
+        }
+
+        function kali(a, b) {
+            return a * b;
+        }
+
+        function bagi(a, b) {
+            if (b !== 0) {
+                return a / b;
+            } else {
+                return "Error: Tidak bisa dibagi 0";
+            }
+        }
+
+        // Elemen DOM
+        const angka1Input = document.getElementById('angka1');
+        const angka2Input = document.getElementById('angka2');
+        const operationButtons = document.querySelectorAll('.operation-btn');
+        const hitungButton = document.getElementById('hitung');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultValue = document.getElementById('resultValue');
+        const resultOperation = document.getElementById('resultOperation');
+        const historyList = document.getElementById('historyList');
+
+        let selectedOperation = '';
+
+        // Event listener untuk pemilihan operasi
+        operationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Hapus kelas aktif dari semua tombol
+                operationButtons.forEach(btn => {
+                    btn.style.opacity = '0.7';
+                    btn.style.transform = 'scale(1)';
+                });
+                
+                // Tandai tombol yang dipilih
+                button.style.opacity = '1';
+                button.style.transform = 'scale(1.05)';
+                
+                selectedOperation = button.dataset.operation;
+            });
+        });
+
+        // Event listener untuk tombol hitung
+        hitungButton.addEventListener('click', () => {
+            const angka1 = parseFloat(angka1Input.value);
+            const angka2 = parseFloat(angka2Input.value);
+            
+            // Validasi input
+            if (isNaN(angka1) || isNaN(angka2)) {
+                resultValue.innerHTML = '<span class="error">Masukkan angka yang valid!</span>';
+                resultContainer.classList.add('show');
+                return;
+            }
+            
+            if (!selectedOperation) {
+                resultValue.innerHTML = '<span class="error">Pilih operasi terlebih dahulu!</span>';
+                resultContainer.classList.add('show');
+                return;
+            }
+            
+            let hasil;
+            let operasiSimbol;
+            
+            // Lakukan perhitungan berdasarkan operasi yang dipilih
+            switch (selectedOperation) {
+                case 'tambah':
+                    hasil = tambah(angka1, angka2);
+                    operasiSimbol = '+';
+                    break;
+                case 'kurang':
+                    hasil = kurang(angka1, angka2);
+                    operasiSimbol = '-';
+                    break;
+                case 'kali':
+                    hasil = kali(angka1, angka2);
+                    operasiSimbol = '×';
+                    break;
+                case 'bagi':
+                    hasil = bagi(angka1, angka2);
+                    operasiSimbol = '÷';
+                    break;
+            }
+            
+            // Tampilkan hasil
+            resultValue.textContent = hasil;
+            resultOperation.textContent = `${angka1} ${operasiSimbol} ${angka2} = ${hasil}`;
+            resultContainer.classList.add('show');
+            
+            // Tambahkan ke riwayat
+            addToHistory(angka1, angka2, operasiSimbol, hasil);
+        });
+
+        // Fungsi untuk menambahkan ke riwayat
+        function addToHistory(angka1, angka2, operasi, hasil) {
+            const historyItem = document.createElement('li');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span class="history-operation">${angka1} ${operasi} ${angka2}</span>
+                <span class="history-result">${hasil}</span>
+            `;
+            
+            // Tambahkan di atas riwayat sebelumnya
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            
+            // Batasi riwayat hingga 5 item
+            if (historyList.children.length > 5) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+
+        // Animasi untuk input ketika difokuskan
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.style.transform = 'translateY(-5px)';
+                input.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
