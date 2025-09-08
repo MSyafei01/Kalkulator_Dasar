@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Ilmiah</title>
+    <link rel="stylesheet" href="model.css">
+
+</head>
+<body>
+    <div class="calculator">
+        <div class="calculator-header">
+            <div>Scientific</div>
+            <div class="mode-indicator">DEG</div>
+        </div>
+        
+        <div class="display">
+            <div class="display-history"></div>
+            <div class="display-input">0</div>
+        </div>
+        
+        <div class="calculator-body">
+            <div class="section-label">Memory Functions</div>
+            <button class="btn btn-memory" data-action="mc">MC</button>
+            <button class="btn btn-memory" data-action="mr">MR</button>
+            <button class="btn btn-memory" data-action="m+">M+</button>
+            <button class="btn btn-memory" data-action="m-">M−</button>
+            <button class="btn btn-memory" data-action="ms">MS</button>
+            <button class="btn btn-memory" data-action="m~">M∼</button>
+            
+            <div class="section-label">Trigonometry</div>
+            <button class="btn btn-trig" data-action="sin">sin</button>
+            <button class="btn btn-trig" data-action="cos">cos</button>
+            <button class="btn btn-trig" data-action="tan">tan</button>
+            <button class="btn btn-function" data-action="sqrt">√</button>
+            <button class="btn btn-function" data-action="square">x²</button>
+            
+            <button class="btn btn-function" data-action="reciprocal">1/x</button>
+            <button class="btn btn-function" data-action="abs">|x|</button>
+            <button class="btn btn-function" data-action="exp">exp</button>
+            <button class="btn btn-function" data-action="mod">mod</button>
+            <button class="btn btn-operator" data-action="divide">÷</button>
+            
+            <button class="btn btn-function" data-action="cbrt">∛</button>
+            <button class="btn" data-value="(">(</button>
+            <button class="btn" data-value=")">)</button>
+            <button class="btn btn-function" data-action="factorial">n!</button>
+            <button class="btn btn-operator" data-action="multiply">×</button>
+            
+            <button class="btn btn-function" data-action="power">x^y</button>
+            <button class="btn" data-value="7">7</button>
+            <button class="btn" data-value="8">8</button>
+            <button class="btn" data-value="9">9</button>
+            <button class="btn btn-operator" data-action="subtract">−</button>
+            
+            <button class="btn btn-function" data-action="tenPower">10^x</button>
+            <button class="btn" data-value="4">4</button>
+            <button class="btn" data-value="5">5</button>
+            <button class="btn" data-value="6">6</button>
+            <button class="btn btn-operator" data-action="add">+</button>
+            
+            <button class="btn btn-function" data-action="log">log</button>
+            <button class="btn" data-value="1">1</button>
+            <button class="btn" data-value="2">2</button>
+            <button class="btn" data-value="3">3</button>
+            <button class="btn btn-equals" data-action="calculate">=</button>
+            
+            <button class="btn btn-function" data-action="ln">ln</button>
+            <button class="btn btn-function" data-action="negate">+/-</button>
+            <button class="btn" data-value="0">0</button>
+            <button class="btn" data-value=".">.</button>
+            
+            <div class="memory-status" id="memoryStatus"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

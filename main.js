@@ -1,183 +1,277 @@
-import React, { useState } from "react";
 
-export default function Calculator() {
-  const [currentInput, setCurrentInput] = useState("0");
-  const [previousInput, setPreviousInput] = useState("");
-  const [operation, setOperation] = useState(null);
-  const [memory, setMemory] = useState(0);
-  const [isRadians, setIsRadians] = useState(false);
-  const [shouldReset, setShouldReset] = useState(false);
-
-  const updateInput = (value) => {
-    if (currentInput === "0" || shouldReset) {
-      setCurrentInput(value);
-      setShouldReset(false);
-    } else {
-      setCurrentInput(currentInput + value);
-    }
-  };
-
-  const clearAll = () => {
-    setCurrentInput("0");
-    setPreviousInput("");
-    setOperation(null);
-    setShouldReset(false);
-  };
-
-  const chooseOperation = (op) => {
-    if (currentInput === "0") return;
-    if (previousInput !== "") compute();
-    setOperation(op);
-    setPreviousInput(currentInput);
-    setShouldReset(true);
-  };
-
-  const compute = () => {
-    const prev = parseFloat(previousInput);
-    const curr = parseFloat(currentInput);
-    if (isNaN(prev) || isNaN(curr)) return;
-
-    let result;
-    switch (operation) {
-      case "add":
-        result = prev + curr;
-        break;
-      case "subtract":
-        result = prev - curr;
-        break;
-      case "multiply":
-        result = prev * curr;
-        break;
-      case "divide":
-        result = prev / curr;
-        break;
-      case "power":
-        result = Math.pow(prev, curr);
-        break;
-      case "mod":
-        result = prev % curr;
-        break;
-      default:
-        return;
-    }
-
-    setCurrentInput(result.toString());
-    setOperation(null);
-    setPreviousInput("");
-  };
-
-  const addDecimal = () => {
-    if (shouldReset) {
-      setCurrentInput("0.");
-      setShouldReset(false);
-    } else if (!currentInput.includes(".")) {
-      setCurrentInput(currentInput + ".");
-    }
-  };
-
-  const toggleSign = () => {
-    setCurrentInput((parseFloat(currentInput) * -1).toString());
-  };
-
-  const memoryFunction = (func) => {
-    const current = parseFloat(currentInput);
-    switch (func) {
-      case "mc":
-        setMemory(0);
-        break;
-      case "mr":
-        setCurrentInput(memory.toString());
-        break;
-      case "m+":
-        setMemory(memory + current);
-        break;
-      case "m-":
-        setMemory(memory - current);
-        break;
-      case "ms":
-        setMemory(current);
-        break;
-      case "m~":
-        setMemory(-memory);
-        break;
-    }
-  };
-
-  const scientificFunction = (func) => {
-    const curr = parseFloat(currentInput);
-    let result;
-    switch (func) {
-      case "sqrt":
-        result = curr < 0 ? "Error" : Math.sqrt(curr);
-        break;
-      case "square":
-        result = Math.pow(curr, 2);
-        break;
-      case "sin":
-        result = isRadians ? Math.sin(curr) : Math.sin(curr * Math.PI / 180);
-        break;
-      case "cos":
-        result = isRadians ? Math.cos(curr) : Math.cos(curr * Math.PI / 180);
-        break;
-      case "tan":
-        result = isRadians ? Math.tan(curr) : Math.tan(curr * Math.PI / 180);
-        break;
-      default:
-        return;
-    }
-    setCurrentInput(result.toString());
-  };
-
-  return (
-    <div className="calculator">
-      <div className="display">
-        <div className="history">{previousInput}</div>
-        <div className="input">{currentInput}</div>
-        <div className="status">
-          {memory !== 0 && <span>Memory: {memory}</span>}
-          <span onClick={() => setIsRadians(!isRadians)}>
-            {isRadians ? "RAD" : "DEG"}
-          </span>
-        </div>
-      </div>
-
-      <div className="buttons">
-        {/* Angka */}
-        {[...Array(10).keys()].map((n) => (
-          <button key={n} onClick={() => updateInput(n.toString())}>
-            {n}
-          </button>
-        ))}
-        <button onClick={addDecimal}>.</button>
-
-        {/* Operasi */}
-        <button onClick={() => chooseOperation("add")}>+</button>
-        <button onClick={() => chooseOperation("subtract")}>-</button>
-        <button onClick={() => chooseOperation("multiply")}>×</button>
-        <button onClick={() => chooseOperation("divide")}>÷</button>
-        <button onClick={() => chooseOperation("power")}>^</button>
-        <button onClick={() => chooseOperation("mod")}>%</button>
-
-        {/* Fungsi lain */}
-        <button onClick={toggleSign}>+/-</button>
-        <button onClick={clearAll}>C</button>
-        <button onClick={compute}>=</button>
-
-        {/* Scientific */}
-        <button onClick={() => scientificFunction("sqrt")}>√</button>
-        <button onClick={() => scientificFunction("square")}>x²</button>
-        <button onClick={() => scientificFunction("sin")}>sin</button>
-        <button onClick={() => scientificFunction("cos")}>cos</button>
-        <button onClick={() => scientificFunction("tan")}>tan</button>
-
-        {/* Memory */}
-        <button onClick={() => memoryFunction("mc")}>MC</button>
-        <button onClick={() => memoryFunction("mr")}>MR</button>
-        <button onClick={() => memoryFunction("m+")}>M+</button>
-        <button onClick={() => memoryFunction("m-")}>M-</button>
-        <button onClick={() => memoryFunction("ms")}>MS</button>
-        <button onClick={() => memoryFunction("m~")}>M±</button>
-      </div>
-    </div>
-  );
-}
+        document.addEventListener('DOMContentLoaded', function() {
+            // Element references
+            const displayInput = document.querySelector('.display-input');
+            const displayHistory = document.querySelector('.display-history');
+            const memoryStatus = document.getElementById('memoryStatus');
+            const modeIndicator = document.querySelector('.mode-indicator');
+            
+            // Calculator state
+            let currentInput = '0';
+            let previousInput = '';
+            let operation = null;
+            let shouldResetScreen = false;
+            let memory = 0;
+            let isRadians = false;
+            
+            // Update display
+            function updateDisplay() {
+                displayInput.textContent = currentInput;
+                displayHistory.textContent = previousInput;
+                
+                // Update memory status
+                memoryStatus.textContent = memory !== 0 ? `Memory: ${memory}` : '';
+            }
+            
+            // Reset calculator
+            function resetCalculator() {
+                currentInput = '0';
+                previousInput = '';
+                operation = null;
+                shouldResetScreen = false;
+                updateDisplay();
+            }
+            
+            // Append number to current input
+            function appendNumber(number) {
+                if (currentInput === '0' || shouldResetScreen) {
+                    currentInput = number;
+                    shouldResetScreen = false;
+                } else {
+                    currentInput += number;
+                }
+                updateDisplay();
+            }
+            
+            // Choose operation
+            function chooseOperation(op) {
+                if (currentInput === '0') return;
+                
+                if (previousInput !== '') {
+                    compute();
+                }
+                
+                operation = op;
+                previousInput = currentInput;
+                shouldResetScreen = true;
+                updateDisplay();
+            }
+            
+            // Compute calculation
+            function compute() {
+                let computation;
+                const prev = parseFloat(previousInput);
+                const current = parseFloat(currentInput);
+                
+                if (isNaN(prev) || isNaN(current)) return;
+                
+                switch (operation) {
+                    case 'add':
+                        computation = prev + current;
+                        break;
+                    case 'subtract':
+                        computation = prev - current;
+                        break;
+                    case 'multiply':
+                        computation = prev * current;
+                        break;
+                    case 'divide':
+                        computation = prev / current;
+                        break;
+                    case 'power':
+                        computation = Math.pow(prev, current);
+                        break;
+                    case 'mod':
+                        computation = prev % current;
+                        break;
+                    default:
+                        return;
+                }
+                
+                currentInput = computation.toString();
+                operation = null;
+                previousInput = '';
+                updateDisplay();
+            }
+            
+            // Add decimal point
+            function addDecimal() {
+                if (shouldResetScreen) {
+                    currentInput = '0.';
+                    shouldResetScreen = false;
+                } else if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+                updateDisplay();
+            }
+            
+            // Calculate percentage
+            function calculatePercentage() {
+                const current = parseFloat(currentInput);
+                currentInput = (current / 100).toString();
+                updateDisplay();
+            }
+            
+            // Toggle sign
+            function toggleSign() {
+                currentInput = (parseFloat(currentInput) * -1).toString();
+                updateDisplay();
+            }
+            
+            // Scientific functions
+            function scientificFunction(func) {
+                const current = parseFloat(currentInput);
+                let computation;
+                
+                switch (func) {
+                    case 'square':
+                        computation = Math.pow(current, 2);
+                        break;
+                    case 'sqrt':
+                        if (current < 0) {
+                            computation = 'Error';
+                        } else {
+                            computation = Math.sqrt(current);
+                        }
+                        break;
+                    case 'cbrt':
+                        computation = Math.cbrt(current);
+                        break;
+                    case 'reciprocal':
+                        computation = 1 / current;
+                        break;
+                    case 'abs':
+                        computation = Math.abs(current);
+                        break;
+                    case 'exp':
+                        computation = Math.exp(current);
+                        break;
+                    case 'factorial':
+                        if (current < 0 || !Number.isInteger(current)) {
+                            computation = 'Error';
+                        } else {
+                            computation = factorial(current);
+                        }
+                        break;
+                    case 'log':
+                        computation = Math.log10(current);
+                        break;
+                    case 'ln':
+                        computation = Math.log(current);
+                        break;
+                    case 'sin':
+                        computation = isRadians ? Math.sin(current) : Math.sin(current * Math.PI / 180);
+                        break;
+                    case 'cos':
+                        computation = isRadians ? Math.cos(current) : Math.cos(current * Math.PI / 180);
+                        break;
+                    case 'tan':
+                        computation = isRadians ? Math.tan(current) : Math.tan(current * Math.PI / 180);
+                        break;
+                    case 'tenPower':
+                        computation = Math.pow(10, current);
+                        break;
+                    default:
+                        return;
+                }
+                
+                if (computation !== 'Error') {
+                    currentInput = parseFloat(computation.toFixed(10)).toString();
+                } else {
+                    currentInput = computation;
+                }
+                updateDisplay();
+            }
+            
+            // Helper function for factorial calculation
+            function factorial(n) {
+                if (n === 0 || n === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+            
+            // Memory functions
+            function memoryFunction(func) {
+                const current = parseFloat(currentInput);
+                
+                switch (func) {
+                    case 'mc':
+                        memory = 0;
+                        break;
+                    case 'mr':
+                        currentInput = memory.toString();
+                        break;
+                    case 'm+':
+                        memory += current;
+                        break;
+                    case 'm-':
+                        memory -= current;
+                        break;
+                    case 'ms':
+                        memory = current;
+                        break;
+                    case 'm~':
+                        memory = -memory;
+                        break;
+                }
+                
+                updateDisplay();
+            }
+            
+            // Toggle degree/radian mode
+            function toggleAngleMode() {
+                isRadians = !isRadians;
+                modeIndicator.textContent = isRadians ? 'RAD' : 'DEG';
+            }
+            
+            // Event listeners for buttons
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (button.hasAttribute('data-value')) {
+                        const value = button.getAttribute('data-value');
+                        if (value === '.') {
+                            addDecimal();
+                        } else if (value === '(' || value === ')') {
+                            // For future implementation of parentheses
+                            appendNumber(value);
+                        } else {
+                            appendNumber(value);
+                        }
+                    } else if (button.hasAttribute('data-action')) {
+                        const action = button.getAttribute('data-action');
+                        
+                        if (action === 'calculate') {
+                            compute();
+                        } else if (action === 'negate') {
+                            toggleSign();
+                        } else if ([
+                            'sin', 'cos', 'tan', 'sqrt', 'square', 'cbrt', 
+                            'reciprocal', 'abs', 'exp', 'factorial', 'log', 
+                            'ln', 'tenPower'
+                        ].includes(action)) {
+                            scientificFunction(action);
+                        } else if ([
+                            'mc', 'mr', 'm+', 'm-', 'ms', 'm~'
+                        ].includes(action)) {
+                            memoryFunction(action);
+                        } else if (action === 'mod') {
+                            chooseOperation('mod');
+                        } else if (action === 'power') {
+                            chooseOperation('power');
+                        } else {
+                            chooseOperation(action);
+                        }
+                    }
+                });
+            });
+            
+            // Toggle angle mode on mode indicator click
+            modeIndicator.addEventListener('click', toggleAngleMode);
+            
+            // Initialize display
+            updateDisplay();
+        });
+    
